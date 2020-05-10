@@ -28,8 +28,8 @@ export default {
         return{
             // 这是表单的数据绑定对象，username和password都是使用v-model进行双向绑定的
             loginForm:{
-                username:'admin',
-                password:'123456'
+                username:window.sessionStorage.getItem('username')||'',
+                password:window.sessionStorage.getItem('password')||''
             },
             // 这是表单的验证规则对象 
             loginFormRules:{
@@ -50,6 +50,7 @@ export default {
         HandleFormReset() {
             // resetFileds() 是 element Ui插件提供的来清空表单内容的函数
             // 该函数会对整个表单进行充值，并且移除校验结果
+            
             this.$refs.loginFormRef.resetFields()
         },
         HandleFromLogin(){
@@ -77,6 +78,8 @@ export default {
             this.$message.success('登陆成功。')
             // token到本地的sessionStorage中，为了方便项目中访问除登陆以外的别的API
             window.sessionStorage.setItem('token', res.data.token)
+            window.sessionStorage.setItem('username', res.data.username)
+            window.sessionStorage.setItem('password','123456')
             // 登陆成功后跳转页面
             this.$router.push('/home')
         }
