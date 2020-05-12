@@ -44,7 +44,8 @@
                     <el-button @click="HandleDeleteUserById(slot.row.id)" type="danger" icon="el-icon-delete" size='mini'> </el-button>
                     <!-- 分配角色按钮 warning黄色 el-tooltip进行提示信息-->
                     <el-tooltip :enterable="false" effect="dark" content="分配角色" placement="top">
-                        <el-button type="warning" icon="el-icon-setting" size='mini'> </el-button>
+                        <el-button type="warning" icon="el-icon-setting" size='mini'
+                        @click="HandlesetRole(slot.row)"> </el-button>
                     </el-tooltip>
                     
                 </template>
@@ -100,6 +101,26 @@
         <span slot="footer" class="dialog-footer">
             <el-button @click="editDialogVisible=false" >取消</el-button>
             <el-button type="primary" @click="HanddleEditUserInfo">确定</el-button>
+        </span>
+    </el-dialog>
+    <!-- 分配角色的对话框 -->
+    <el-dialog title="分配角色" @close="HandleRoleDialogClose"
+    :visible.sync="setRoleDialogVisible" width="50%">
+        <div>
+            <p>当前用户{{userInfo.username}}</p>
+            <p>当前角色{{userInfo.role_name}}</p>
+            <p>分配新角色
+             <el-select v-model="selectedRoleId" placeholder="请选择">
+                <el-option 
+                v-for="(item) in rolesList" :key="item.id"
+                :label="item.roleName" :value="item.id"></el-option>
+             </el-select>
+            </p>
+            
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="setRoleDialogVisible=false">取消</el-button>
+            <el-button type="primary" @click="HandleSaveRoleInfo">确定 </el-button>
         </span>
     </el-dialog>
 </div>
@@ -165,7 +186,15 @@ export default {
                     {required: true, message:'请输入手机号', trigger:'blur'},
                     {validator:checkMobille, trigger:'blur'}
                 ]
-         }
+         },
+         // 控制分配角色对话框的显示与隐藏
+         setRoleDialogVisible:false,
+         // 需要被分配角色的用户信息  
+         userInfo:{},
+         // 所有的角色的数据列表
+         rolesList:[],
+         // 已经选择的角色的id
+         selectedRoleId:''
             
          
         }
@@ -280,18 +309,64 @@ export default {
             }
             this.$message.success('用户删除成功')
             this.getUserList()
+        },
+        // 展示分配角色的对话框
+        async HandlesetRole(userInfo){
+            // 将当前row的内容保存，以便后边使用
+            this.userInfo = userInfo
+            // 在展示对话框之前，先获取说有的角色列表
+            const {data: res} = await this.$http.get('roles')
+            if(res.meta.status !==200){
+                return this.$message.error('获取列表失败')
+            }
+            this.rolesList = res.data
+            // 显示分配角色的对话框
+            this.setRoleDialogVisible = true
+        },
+        // 点击按钮分配角色
+        async HandleSaveRoleInfo(){
+            if(!this.selectedRoleId){
+                return this.$message.error('请选择用户角色')
+            }
+            const {data:res} = await this.$http.put(`users/${this.userInfo.id}/role`,{rid: this.selectedRoleId})
+            if(res.meta.status !== 200) {
+                return this.$message.error('角色更新失败')
+            }
+            this.$message.success('角色更新成功')
+            this.getUserList()
+            this.setRoleDialogVisible = false
+        },
+        // 监听分配角色对话框的关闭事件
+        HandleRoleDialogClose(){
+            // 将要分配的用户id设置为空，方便下次点开的时候使用
+            this.selectedRoleId = ''
+            // 需要被分配的用户信息也设置为空
+            this.userInfo = {}
         }
-       
         
     },
     created(){
         this.getUserList()
     }
  }
+ /**
+  * 感觉这一节没什么可以总结的，全部都是使用的插件，真正自己写的就是一点数据
+  * 获取而已，没啥特色，到这觉得这个项目很水
+  * 那就简单的总结一下都有哪些功能吧
+  * 对于用户列表页，上面是使用的一个面包屑的插件，下边就是一个card插件，插件的第一部分就是输入框和添加用户的按钮
+  * 这个是使用的一个row，实现的功能是点击搜索的时候可以搜索用户，就是从新获取数据 
+  * 下边是使用的一个table列表，状态和操作部分都是使用的template+v-slot插槽添加的
+  * 最下面是一个 pagination分页区，实现了每页多少用户的获取当前页数据的功能，每次都是重新发一边请求
+  * 然后剩下还有四个功能
+  * 第一个是状态的开关，点击的时候使用put方法向后台发送数据，如果成功则提示成功，失败还要提示失败，并且把用户状态该回来
+  * 第二个是添加用户的按钮，点击的时候会出现一个弹框，使用的是dialog+form实现的，清空的时候是使用resetField，
+  * 添加的时候先验证validate,成功的时候提醒成功，然后隐藏dialog并且从新获取数据
+  * 第三个是编辑按钮，点击的时候弹出编辑的对话框，实现和添加的时候一样
+  * 第四个是删除的按钮，这个使用了新的MessageBox的$confirm，使用它来设置取消和真正的删除
+  * 根据confirm的返回值是cancle还是confirm来确定用户点击了哪个按钮，
+  * 如果点击的是确认，就会使用delete发送axios请求，然后请求成功以后再重新获取用户的数据
+  */
 </script>
 <style lang="less" scoped>
 
 </style>
-//  HandledeletUserById(id){
-//             // 弹框询问用户是否删除
-            

@@ -6,7 +6,7 @@
                 <img src="../assets/logo.png" alt="">
             </div>
             <!-- 登陆表单区 -->
-            <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="60px" class="login-form"> 
+            <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="60px" class="login-form" :disabled="isDisableddd"> 
                 <!-- ref是拿到表单的实例的 label-width是给label标签占位置的 rules绑定的是验证规则 model绑定的是双向绑定的数据-->
                 <el-form-item label="账号" prop="username">
                  <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user"></el-input>
@@ -43,7 +43,19 @@ export default {
                     {required: true, message:'请输入密码', trigger:'blur'},
                     {min: 6, max: 15, message:'长度在6-15之间', trigger:'blur'}
                 ]
-            }
+            },
+            count: 0,
+            
+            isDisableddd: window.localStorage.getItem('isDisableddd')==='true'?true:false
+        }
+    },
+    created () { 
+    if(window.localStorage.getItem('isDisableddd')==='true') {
+            var timeer = setInterval(()=>{          
+                    window.localStorage.removeItem('isDisableddd')
+                    this.isDisableddd = false
+                    this.count = 0
+            },10000)
         }
     },
     methods: {
@@ -70,16 +82,33 @@ export default {
                 // if( res.meta.status !== 200) return console.log('fail')
                 // console.log('success')
             })
-        },
+        },    
         // 处理相应的函数
         handleResponse(res) {
             res = res.data
-            if( res.meta.status !== 200) return this.$message.error('登陆失败！')
+            if( res.meta.status !== 200){
+                this.count++
+                console.log(this.count)
+                if(this.count===3){
+                    this.isDisableddd = true
+                    window.localStorage.setItem('isDisableddd', true)
+                    setInterval(()=>{   
+                        window.localStorage.removeItem('isDisableddd')
+                        this.isDisableddd = false
+                        this.count = 0
+                    },10000)
+                    return this.$message.error('账户被锁，十分钟以后尝试')
+                }
+                
+                return this.$message.error('登陆失败！')
+            } 
+            
             this.$message.success('登陆成功。')
             // token到本地的sessionStorage中，为了方便项目中访问除登陆以外的别的API
             window.sessionStorage.setItem('token', res.data.token)
             window.sessionStorage.setItem('username', res.data.username)
             window.sessionStorage.setItem('password','123456')
+            
             // 登陆成功后跳转页面
             this.$router.push('/home')
         }
