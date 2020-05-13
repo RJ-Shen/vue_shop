@@ -221,6 +221,26 @@ export default {
     created(){
         this.getCateList()
     }
+    /**
+     * 这里实现的页面布局：
+     * 1、面包屑导航 el-breadcrumb >>> el-breadcrumb-item
+     * 2、使用一个<el-card></el-card>实现表格部分的布局，也是页面展示的除了面包屑导航的所有区域
+     * 2.1 使用el-row>>el-col>>el-button实现一个添加用户的按钮,所以有一个按钮的点击事件handleShowAddDiagog()，
+     *  在这个事件内要获取父级列表的数据getParentCateList(),获取列表，成功以后将元素保存在parentCateList数组内，并且让添加用户的对话框显示addCateDialogVisible=true
+     * 2.2 使用一个新的组件tree-table实现父级列表的显示，没一列都是以插槽的形式插件去的，在column中定义 label定义的列的名称，prop: 'cat_name'定义的分类的名称
+     * 2.3 使用的是一个底部的导航栏el-pagination实现，该导航栏可以监听@size-change="handleSizeChange"
+         @current-change="handleCurrentChange"每页显示条数和页码数的变化，在handleSizeChange中就会把queryInfo中的pageSize重置为监听到newsize，并且重新获取在这个size下的用户的列表
+         handleCurrentChange会每次将queryInfo中的页码数pagenum重置为新的newnum并重新获取数据
+       
+     *  重头戏在添加用户对话框上，还是使用的el-dialog el-form实现的。
+        可选择的是使用el-cascader做的，其中很多功能都是使用props动态添加的具体见 cascaderProps
+        当点击关闭按钮的时候要实现一个重置表单的功能，同时也要把记录选择的 selectedKeys addCateForm的内容做对于的清空
+        点击确定的时候要向服务器发送确定的请求，请求之前要先使用validate()验证表单，请求成功以后提示添加成功，并且从新获取数据来刷新列表，同时隐藏添加用户对话框
+
+     :model="addCateForm" label-width="100px"
+         :rules="addCateFormRules" ref="addCateFormRef"
+         没有做删除，编辑，因为不知道接口
+     */
 }
 </script>
 <style lang="less" scoped>

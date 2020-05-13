@@ -44,9 +44,10 @@ export default {
                     {min: 6, max: 15, message:'长度在6-15之间', trigger:'blur'}
                 ]
             },
-            count: 0,
-            
-            isDisableddd: window.localStorage.getItem('isDisableddd')==='true'?true:false
+            // 计数器，用来计算错误次数
+            count: 0,    
+            // 控制表单是否禁用      
+            isDisableddd: window.localStorage.getItem('isDisableddd')==='true' ? true : false
         }
     },
     created () { 
@@ -88,7 +89,7 @@ export default {
             res = res.data
             if( res.meta.status !== 200){
                 this.count++
-                console.log(this.count)
+                // 如果错误三次，则禁用30s
                 if(this.count===3){
                     this.isDisableddd = true
                     window.localStorage.setItem('isDisableddd', true)

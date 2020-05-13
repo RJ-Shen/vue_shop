@@ -4,8 +4,11 @@ import { Button, Form, FormItem, Input,
          Main, Menu, Submenu, MenuItem,Breadcrumb,
          BreadcrumbItem, Card,Row,Col,Table,TableColumn,
         Switch,Tooltip,Pagination,Dialog,MessageBox,
-        Tag,Tree,Select,Option,Cascader } from 'element-ui'
+        Tag,Tree,Select,Option,Cascader,Alert,
+        Tabs,TabPane } from 'element-ui'
 
+Vue.use(TabPane)
+Vue.use(Tabs)        
 Vue.use(Button)
 Vue.use(Form)
 Vue.use(FormItem)
@@ -33,6 +36,7 @@ Vue.use(Tree)
 Vue.use(Select)
 Vue.use(Option)
 Vue.use(Cascader)
+Vue.use(Alert)
 // 提示插件需要挂载到Vue的实例上
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
