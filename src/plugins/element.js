@@ -6,7 +6,9 @@ import { Button, Form, FormItem, Input,
         Switch,Tooltip,Pagination,Dialog,MessageBox,
         Tag,Tree,Select,Option,Cascader,Alert,
         Tabs,TabPane,Steps, Step, CheckboxGroup, Checkbox,
-        Upload } from 'element-ui'
+        Upload , Timeline,TimelineItem} from 'element-ui'
+Vue.use(Timeline)
+Vue.use(TimelineItem)
 Vue.use(Upload)
 Vue.use(Checkbox)
 Vue.use(CheckboxGroup)

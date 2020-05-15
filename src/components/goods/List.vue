@@ -52,7 +52,7 @@
       :page-sizes="[10, 20, 30, 40]"
       :page-size="queryInfo.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
+      :total="total">
     </el-pagination>
   </el-card>
 </div>
@@ -81,7 +81,7 @@ export default {
             }
            // this.$message.success('获取商品列表成功')
             this.goodsList = res.data.goods
-            this.total = res.total
+            this.total = res.data.total
            // console.log(this.goodsList)
         },
         // 监听pagesize的改变
