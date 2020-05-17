@@ -232,7 +232,7 @@ export default {
                 ...this.$refs.treeRef.getCheckedKeys(),
                 ...this.$refs.treeRef.getHalfCheckedKeys()
             ]
-            console.log(keys)
+           // console.log(keys)
             const idStr = keys.join(',')
             const {data:res} = await this.$http.post(`roles/${this.roleId}/rights`,{rids:idStr})
             if(res.meta.status !==200) {
